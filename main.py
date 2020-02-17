@@ -96,7 +96,6 @@ def main():
         toJson('output.json', cell_dict)
     #else the program is parsing the cell markers db
     elif not args.c:
-        print("parse db")
         cell_dict = parseDB(args.db)
         toJson('markers.json', cell_dict)
     else:
