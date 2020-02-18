@@ -8,6 +8,15 @@ import csv
 import json
 import argparse
 
+def parseTypes(path):
+    gene_list = []
+    with open(path) as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        line_idx = 0
+        for row in csv_reader:
+            gene_list.append(row['type'])
+        return(gene_list)
+
 """
 parses cell markers db file
 """
@@ -84,22 +93,29 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-db')
     parser.add_argument('-c', nargs='+')
+    parser.add_argument('-o')
     args = parser.parse_args()
 
-    cell_types = ['T cell', 'B cell', 'natural killer cell']
+#    cell_types = ['T cell', 'B cell', 'natural killer cell']
     cell_dict = {}
-    
-    if not args.db and not args.c:
-        for cell in cell_types:
-            cell_dict[cell] = parseCSV(cell)
+    out_path = 'output.json'
+    if args.o:
+        out_path = args.o
 
-        toJson('output.json', cell_dict)
+    if not args.db and not args.c:
+        #search for types.csv which holds list of all types to parse
+        cell_types = parseTypes("inputs/types.csv")
+        print(cell_types)
+        for cell in cell_types:
+            path = "inputs/" + str(cell)
+            cell_dict[cell] = parseCSV(path)
+        toJson(out_path, cell_dict)
     #else the program is parsing the cell markers db
     elif not args.c:
         cell_dict = parseDB(args.db)
-        toJson('markers.json', cell_dict)
+        toJson(out_path, cell_dict)
     else:
         cell_dict = cmp(args.c[0], args.c[1])
-        toJson('comparison.json', cell_dict)
+        toJson(out_path, cell_dict)
 if __name__ == "__main__":
     main()
