@@ -43,15 +43,18 @@ parses KinderMiner csv output file
 def parseCSV(cell):
     gene_list = []
     path = cell + '.csv'
-    with open(path) as csv_file:
-        csv_reader = csv.DictReader(csv_file)
-        line_idx = 0
-        for row in csv_reader:
-            if line_idx != 0:
-                gene_list.append(row['target'])
-            line_idx += 1
-    
-        return(gene_list)
+    try:
+        with open(path) as csv_file:
+            csv_reader = csv.DictReader(csv_file)
+            line_idx = 0
+            for row in csv_reader:
+                if line_idx != 0:
+                    gene_list.append(row['target'])
+                line_idx += 1
+    except:
+        print("File: " + path + " does not exist.")
+
+    return(gene_list)
 
 """
 compares two json files
@@ -108,7 +111,10 @@ def main():
         print(cell_types)
         for cell in cell_types:
             path = "inputs/" + str(cell)
-            cell_dict[cell] = parseCSV(path)
+            data = parseCSV(path)
+            #check if list is not empty
+            if data:
+                cell_dict[cell] = data
         toJson(out_path, cell_dict)
     #else the program is parsing the cell markers db
     elif not args.c:

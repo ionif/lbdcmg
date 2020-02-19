@@ -8,7 +8,7 @@ rule cm_db:
 
 rule km:
     input:
-        "inputs/km.txt",
+        "inputs/types.csv",
     output:
         "outputs/km_output.json"
     shell:
@@ -16,7 +16,7 @@ rule km:
 
 rule cx:
     input:
-        db = "outputs/markers.json"
+        db = "outputs/markers.json",
         km = "outputs/output.json"
     output:
         "outputs/cx_output.json"
