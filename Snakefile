@@ -1,4 +1,8 @@
-rule cm_db:
+rule all:
+    input:
+        "outputs/cx_output.json"
+
+rule parse_CellMarker:
     input:
         "inputs/all_cell_markers.txt",
     output:
@@ -6,7 +10,7 @@ rule cm_db:
     shell:
         "python main.py -db {input} -o {output}"
 
-rule km:
+rule parse_Kinderminer:
     input:
         "inputs/types.csv",
     output:
@@ -14,11 +18,15 @@ rule km:
     shell:
         "python main.py -o {output}"
 
-rule cx:
+rule compute_overlap:
     input:
         db = "outputs/markers.json",
-        km = "outputs/output.json"
+        km = "outputs/km_output.json"
     output:
         "outputs/cx_output.json"
     shell:
         "python main.py -c {input.db} {input.km} -o {output}"
+
+rule plot_overlap:
+    input:
+        
