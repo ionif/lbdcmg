@@ -41,7 +41,7 @@ def parseDB(path):
 parses KinderMiner csv output file
 """
 def parseCSV(cell):
-    gene_list = []
+    gene_dict = {}
     path = cell + '.csv'
     try:
         with open(path) as csv_file:
@@ -49,12 +49,12 @@ def parseCSV(cell):
             line_idx = 0
             for row in csv_reader:
                 if line_idx != 0:
-                    gene_list.append(row['target'])
+                    gene_dict[row['target']] = row['p_value']
                 line_idx += 1
     except:
         print("File: " + path + " does not exist.")
 
-    return(gene_list)
+    return(gene_dict)
 
 """
 compares two json files
@@ -70,7 +70,10 @@ def cmp(path1, path2):
     common_keys = one.keys() & two.keys()
     common_dict = {}
     for key in common_keys:
-        common_values = list(set(one.get(key)) & set(two.get(key)))
+        two_val = two.get(key)
+#        print(two_val.keys())
+        common_values = list(set(one.get(key)) & set(two_val.keys()))
+        print(common_values)
         common_dict[key] = common_values
     
     fdict = {}
@@ -114,6 +117,8 @@ def main():
             data = parseCSV(path)
             #check if list is not empty
             if data:
+                cell = cell.split("/")
+                cell = cell[len(cell)-1]
                 cell_dict[cell] = data
         toJson(out_path, cell_dict)
     #else the program is parsing the cell markers db
