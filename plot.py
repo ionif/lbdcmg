@@ -2,7 +2,16 @@ import argparse
 import os
 import json 
 
-with open("outputs/cx_output.json") as handle:
+parser = argparse.ArgumentParser()
+parser.add_argument('-i')
+args = parser.parse_args()
+
+if args.i:
+    in_path = args.i
+else:
+    in_path = "outputs/cx_output.json"
+
+with open(in_path) as handle:
     data = json.loads(handle.read())
     
 with open("gnuplot.dat", 'w') as f:
