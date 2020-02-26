@@ -28,5 +28,7 @@ rule compute_overlap:
         "python main.py -c {input.db} {input.km} -o {output}"
 
 rule plot_overlap:
-    input:
+    input: "outputs/cx_output.json"
+    shell:
+        "python plot.py -i {input}"
         
