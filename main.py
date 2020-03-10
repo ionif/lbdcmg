@@ -84,6 +84,40 @@ def cmp(path1, path2):
     return(fdict)
 
 """
+find difference in keys for one dict versus another
+"""
+def diffDict(path1, path2):
+    with open(path1) as handle:
+        one = json.loads(handle.read())
+    with open(path2) as handle:
+        two = json.loads(handle.read())
+
+    #find common keys
+    common_keys = one.keys() & two.keys()
+    common_dict = {}
+
+    #diff lists
+    not_in_one = []
+    not_in_two = []
+
+    for key in common_keys:
+        for item in one.get(key):
+            if item not in two.get(key):
+                not_in_two.append(item)
+        for item in two.get(key):
+            if item not in one.get(key):
+                not_in_one.append(item)
+        #value for each cell type
+        value_dict = {}
+        value_dict["KM_not_CM"] = not_in_one
+        value_dict["CM_not_KM"] = not_in_two
+        
+        #map cell type to val
+        common_dict[key] = value_dict
+
+    return(common_dict)
+
+"""
 converts dict to json
 """
 def toJson(path, dict):
@@ -99,6 +133,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-db')
     parser.add_argument('-c', nargs='+')
+    parser.add_argument('-d', nargs='+')
     parser.add_argument('-o')
     args = parser.parse_args()
 
@@ -108,7 +143,7 @@ def main():
     if args.o:
         out_path = args.o
 
-    if not args.db and not args.c:
+    if not args.db and not args.c and not args.d:
         #search for types.csv which holds list of all types to parse
         cell_types = parseTypes("inputs/types.csv")
         print(cell_types)
@@ -122,11 +157,15 @@ def main():
                 cell_dict[cell] = data
         toJson(out_path, cell_dict)
     #else the program is parsing the cell markers db
-    elif not args.c:
+    elif not args.c and not args.d:
         cell_dict = parseDB(args.db)
         toJson(out_path, cell_dict)
-    else:
+    elif not args.d:
         cell_dict = cmp(args.c[0], args.c[1])
         toJson(out_path, cell_dict)
+    else:
+        cell_dict = diffDict(args.d[0], args.d[1])
+        toJson(out_path, cell_dict)
+
 if __name__ == "__main__":
     main()
