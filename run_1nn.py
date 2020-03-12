@@ -20,6 +20,7 @@ def learn_and_print(data_file, cv, keep_genes, out_stream):
     # filter after normalize because we likely will end up with 0 vectors
     if keep_genes is not None:
         x,all_genes = tenxutil.get_gene_set_submatrix(x, all_genes, keep_genes)
+        out_stream.write('finished filtering genes...\n')
     # do no preprocessing and do 5-fold CV
     clf = KNeighborsClassifier(n_neighbors=1, metric=correlation, n_jobs=10)
     cv_results = cross_val_predict(clf, x, y, cv=cv)
